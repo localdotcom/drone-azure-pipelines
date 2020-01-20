@@ -22,30 +22,30 @@ function release {
   if [[ "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
     check_build
   fi
-  # read release definitions and environments into array
+  # read release definitions and stages into array
   IFS=","
   read -ra definitions <<< "$PLUGIN_DEFINITIONS"
-  read -ra environments <<< "$PLUGIN_ENVIRONMENTS"
+  read -ra stages <<< "$PLUGIN_STAGES"
   unset IFS
   for definitionId in "${definitions[@]}"; do
     # get release name
     releaseName=$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -X GET "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/definitions/${definitionId}?api-version=${API_VERSION}" | jq -r '.name')
-    # get existing environments
-    envName=$(echo $(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -X GET "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/definitions/${definitionId}?api-version=${API_VERSION}" | jq '.environments[] | .name') |  sed -e "s/ /,/g")
+    # get existing stages
+    stageName=$(echo $(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -X GET "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/definitions/${definitionId}?api-version=${API_VERSION}" | jq '.environments[] | .name') |  sed -e "s/ /,/g")
     # create empty release and get release id. automation triggers will be switched to 'manual' during release creation
-    releaseId=$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X POST -d '{"definitionId":"'${definitionId}'","manualEnvironments":['${envName[@]}']}' "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/?api-version=${API_VERSION}" | jq -r '.id')
+    releaseId=$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X POST -d '{"definitionId":"'${definitionId}'","manualEnvironments":['${stageName[@]}']}' "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/?api-version=${API_VERSION}" | jq -r '.id')
     if [[ $releaseName = null ]]; then
       echo "Release definition does not exist. Define an existing definition and try again."
       exit 1
     else
-      for environment in "${environments[@]}"; do
-        if [[ "${envName[@]}" =~ "${environment}" ]]; then
-          # get environment id and create release for selected environments
-          envId=$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -X GET "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/${releaseId}?api-version=${API_VERSION}" | jq '.environments[] | select (.name=="'$environment'") | .id')
-          echo "Creating release $releaseName for environment $environment."
-          curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X PATCH -d '{"status":"inProgress"}' "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/${releaseId}/environments/${envId}?api-version=${API_VERSION}-preview" > /dev/null 2>&1
+      for stage in "${stages[@]}"; do
+        if [[ "${stageName[@]}" =~ "${stage}" ]]; then
+          # get stage id and create release for selected stages
+          stageId=$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -X GET "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/${releaseId}?api-version=${API_VERSION}" | jq '.environments[] | select (.name=="'$stage'") | .id')
+          echo "Creating release $releaseName for stage $stage."
+          curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X PATCH -d '{"status":"inProgress"}' "https://vsrm.dev.azure.com/${org}/${project}/_apis/release/releases/${releaseId}/environments/${stageId}?api-version=${API_VERSION}-preview" > /dev/null 2>&1
         else
-          echo "Environment $environment does not exist. Define an existing environment and try again."
+          echo "Stage $stage does not exist. Define an existing stage and try again."
           exit 1
         fi
       done
@@ -132,8 +132,8 @@ elif [[ "$PLUGIN_ACTION" = "release" ]]; then
   if [[ -z "$PLUGIN_DEFINITIONS" ]]; then
     echo "Release definition not specified."
     exit 1
-  elif [[ -z "$PLUGIN_ENVIRONMENTS" ]]; then
-    echo "Environment not specified."
+  elif [[ -z "$PLUGIN_STAGES" ]]; then
+    echo "Stage not specified."
     exit 1
   else
     if [[ -z "$PLUGIN_SKIP" || "$PLUGIN_SKIP" = false ]]; then

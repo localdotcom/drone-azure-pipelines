@@ -21,7 +21,7 @@ steps:
     secret:
       from_secret: azure_secret
 
-- name: Create a new release for selected environments
+- name: Create a new release for selected stages
   image: dclocal/drone-azure-pipelines:1.0.0
   settings:
     action: release
@@ -29,7 +29,7 @@ steps:
     definitions:
       - release_definition_id_1
       - release_definition_id_2
-    environments:
+    stages:
       - development
       - test
     organization: organization
