@@ -19,7 +19,7 @@ function build {
 
 # create release
 function release {
-  if [[ "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
+  if [[ -n "$PLUGIN_CHECK_BUILD_STATE" && "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
     check_build
   fi
   # read release definitions and stages into array
