@@ -115,7 +115,7 @@ fi
 if [[ -z "$PLUGIN_ACTION" ]]; then
   echo "Action not specified."
   exit 1
-elif [[ "$PLUGIN_ACTION" == "build" ]]; then
+elif [[ "$PLUGIN_ACTION" = "build" ]]; then
   if [[ -z "$PLUGIN_DEFINITIONS" ]]; then
     echo "Build definition not specified."
     exit 1
@@ -126,7 +126,7 @@ elif [[ "$PLUGIN_ACTION" == "build" ]]; then
       set -n build
     fi
   fi
-elif [[ "$PLUGIN_ACTION" == "release" ]]; then
+elif [[ "$PLUGIN_ACTION" = "release" ]]; then
   if [[ -z "$PLUGIN_DEFINITIONS" ]]; then
     echo "Release definition not specified."
     exit 1
