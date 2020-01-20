@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # queue build pipeline
-function queue_build {
+function build {
   # read build definitions into array
   IFS=",";read -ra definitions <<< "$PLUGIN_DEFINITIONS"
   for definitionId in "${definitions[@]}"; do
@@ -18,7 +18,7 @@ function queue_build {
 }
 
 # create release
-function create_release {
+function release {
   check_build
   # read release definitions and environments into array
   IFS=","
@@ -115,18 +115,18 @@ fi
 if [[ -z "$PLUGIN_ACTION" ]]; then
   echo "Action not specified."
   exit 1
-elif [[ "$PLUGIN_ACTION" == "queue_build" ]]; then
+elif [[ "$PLUGIN_ACTION" == "build" ]]; then
   if [[ -z "$PLUGIN_DEFINITIONS" ]]; then
     echo "Build definition not specified."
     exit 1
   else
     if [[ -z "$PLUGIN_SKIP" || "$PLUGIN_SKIP" = false ]]; then
-      queue_build
+      build
     else
-      set -n queue_build
+      set -n build
     fi
   fi
-elif [[ "$PLUGIN_ACTION" == "create_release" ]]; then
+elif [[ "$PLUGIN_ACTION" == "release" ]]; then
   if [[ -z "$PLUGIN_DEFINITIONS" ]]; then
     echo "Release definition not specified."
     exit 1
@@ -135,9 +135,9 @@ elif [[ "$PLUGIN_ACTION" == "create_release" ]]; then
     exit 1
   else
     if [[ -z "$PLUGIN_SKIP" || "$PLUGIN_SKIP" = false ]]; then
-      create_release
+      release
     else
-      set -n create_release
+      set -n release
     fi
   fi
 else
