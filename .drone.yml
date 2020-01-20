@@ -1,0 +1,45 @@
+---
+
+kind: pipeline
+name: Bulk run Azure pipelines
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Queue selected build pipelines
+  image: dclocal/drone-vsts-pipelines:1.0.0
+  settings:
+    action: queue_build
+    skip: false
+    definitions:
+      - build_definition_id_1
+      - build_definition_id_2
+      - ...
+      - build_definition_id_n
+    organization: "organization"
+    project: "project"
+    user: "username@domain.com"
+    secret:
+      from_secret: vsts_secret
+
+- name: Create a new release for selected environments
+  image: dclocal/drone-vsts-pipelines:1.0.0
+  settings:
+    action: create_release
+    skip: false
+    definitions:
+      - release_definition_id_1
+      - release_definition_id_2
+      - ...
+      - release_definition_id_n
+    environments:
+      - development
+      - test
+      - production
+    organization: "organization"
+    project: "project"
+    user: "username@domain.com"
+    secret:
+      from_secret: vsts_secret
