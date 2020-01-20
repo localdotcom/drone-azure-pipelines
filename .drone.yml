@@ -9,7 +9,7 @@ platform:
 
 steps:
 - name: Queue selected build pipelines
-  image: dclocal/drone-vsts-pipelines:1.0.0
+  image: dclocal/drone-azure-pipelines:1.0
   settings:
     action: queue_build
     skip: false
@@ -25,7 +25,8 @@ steps:
       from_secret: vsts_secret
 
 - name: Create a new release for selected environments
-  image: dclocal/drone-vsts-pipelines:1.0.0
+  image: dclocal/drone-azure-pipelines:1.0
+  settings:
   settings:
     action: create_release
     skip: false
