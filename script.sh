@@ -19,7 +19,9 @@ function build {
 
 # create release
 function release {
-  check_build
+  if [[ "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
+    check_build
+  fi
   # read release definitions and environments into array
   IFS=","
   read -ra definitions <<< "$PLUGIN_DEFINITIONS"

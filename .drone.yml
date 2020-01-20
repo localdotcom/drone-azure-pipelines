@@ -12,7 +12,6 @@ steps:
   image: dclocal/drone-azure-pipelines:1.0.0
   settings:
     action: queue_build
-    skip: true
     definitions:
       - build_definition_id_1
       - build_definition_id_2
@@ -26,7 +25,7 @@ steps:
   image: dclocal/drone-azure-pipelines:1.0.0
   settings:
     action: release
-    skip: true
+    check_build_state: true
     definitions:
       - release_definition_id_1
       - release_definition_id_2
