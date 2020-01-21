@@ -68,7 +68,7 @@ function check_build {
     len=${#buildIds[@]}
     while [[ $i -lt $len ]]; do
       msg=true
-      # do not run Release task while associated builds in progress
+      # do not run Release task until associated builds in progress
       until [[ "$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X GET https://dev.azure.com/${org}/${project}/_apis/build/builds/${buildIds[$i]}/timeline?api-version=5.1 | jq -r '.records[] | select (.type=="Stage") | .state')" = "completed" ]]; do
         # show message once per loop
         if [[ "$msg" = true ]]; then
