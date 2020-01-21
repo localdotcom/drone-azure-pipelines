@@ -77,7 +77,7 @@ function check_build {
         fi
         sleep 1
       done
-        # cancel Release task if associated builds return 'canceled' or 'failed' status
+        # cancel Release task if associated builds canceled or failed
         if [[ "$(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X GET https://dev.azure.com/${org}/${project}/_apis/build/builds/${buildIds[$i]}/timeline?api-version=5.1 | jq -r '.records[] | select (.type=="Stage") | .result')" = "canceled" ]]; then
           echo "${buildNames[$i]}: $(curl -s -u ${PLUGIN_USER}:${PLUGIN_SECRET} -H "Content-Type: application/json" -X GET https://dev.azure.com/${org}/${project}/_apis/build/builds/${buildIds[$i]}/timeline?api-version=5.1 | jq -r '.records[] | .issues[0] | .message' | sed '/build/!d' | sed '1!d')"
           exit 1
