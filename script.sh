@@ -20,7 +20,7 @@ function build {
 # create release
 function release {
   if [[ -n "$PLUGIN_CHECK_BUILD_STATE" && "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
-    check_build
+    check_status
   fi
   # read release definitions and stages into array
   IFS=","
@@ -54,7 +54,7 @@ function release {
 }
 
 # check build state
-function check_build {
+function check_status {
   # cancel task if build step was skipped 
   if [[ ! -f build_id || ! -f build_name ]]; then
     echo -e "Couldn't get build properties. Seems like build step was skipped.\nRun build step and try again."
