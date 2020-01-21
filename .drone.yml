@@ -19,7 +19,7 @@ steps:
     project: project
     user: username@domain.com
     secret:
-      from_secret: azure_secret
+      from_secret: az_secret
 
 - name: Create a new release for selected stages
   image: dclocal/drone-azure-pipelines:1.0.0
@@ -36,4 +36,4 @@ steps:
     project: project
     user: username@domain.com
     secret:
-      from_secret: azure_secret
+      from_secret: az_secret
