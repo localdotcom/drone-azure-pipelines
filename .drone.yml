@@ -8,10 +8,10 @@ platform:
   arch: amd64
 
 steps:
-- name: Queue selected build pipelines
+- name: Run build pipelines
   image: dclocal/drone-azure-pipelines:1.0.0
   settings:
-    action: queue_build
+    action: build
     definitions:
       - build_definition_id_1
       - build_definition_id_2
@@ -25,7 +25,7 @@ steps:
   image: dclocal/drone-azure-pipelines:1.0.0
   settings:
     action: release
-    check_build_status: true
+    check_build_state: true
     definitions:
       - release_definition_id_1
       - release_definition_id_2

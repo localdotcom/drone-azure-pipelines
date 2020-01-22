@@ -19,8 +19,8 @@ function build {
 
 # create release
 function release {
-  if [[ -n "$PLUGIN_CHECK_BUILD_STATUS" && "$PLUGIN_CHECK_BUILD_STATUS" = true ]]; then
-    check_status
+  if [[ -n "$PLUGIN_CHECK_BUILD_STATE" && "$PLUGIN_CHECK_BUILD_STATE" = true ]]; then
+    check_build_state
   fi
   # read release definitions and stages into array
   IFS=","
@@ -54,7 +54,7 @@ function release {
 }
 
 # check build state
-function check_build_status {
+function check_build_state {
   # cancel task if build step was skipped 
   if [[ ! -f build_id || ! -f build_name ]]; then
     echo -e "Couldn't get build properties. Seems like build step was skipped.\nRun build step and try again."
@@ -123,10 +123,10 @@ elif [[ "$PLUGIN_ACTION" = "build" ]]; then
     echo "Build definition not specified."
     exit 1
   else
-    if [[ -z "$PLUGIN_SKIP" || "$PLUGIN_SKIP" = false ]]; then
-      build
-    else
+    if [[ -n "$PLUGIN_SKIP" && "$PLUGIN_SKIP" = true ]]; then
       set -n build
+    else
+      build
     fi
   fi
 elif [[ "$PLUGIN_ACTION" = "release" ]]; then
@@ -137,10 +137,10 @@ elif [[ "$PLUGIN_ACTION" = "release" ]]; then
     echo "Stage not specified."
     exit 1
   else
-    if [[ -z "$PLUGIN_SKIP" || "$PLUGIN_SKIP" = false ]]; then
-      release
-    else
+    if [[ -n "$PLUGIN_SKIP" && "$PLUGIN_SKIP" = true ]]; then
       set -n release
+    else
+      release
     fi
   fi
 else
